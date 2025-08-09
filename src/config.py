@@ -56,8 +56,8 @@ class Config:
     # HTTPS-related configuration
     FASTAPI_ENABLE_HTTPS: bool = True
     FASTAPI_SSL_PORT: int = 8443
-    FASTAPI_SSL_CERTFILE: str = "/certs/localhost.pem"
-    FASTAPI_SSL_KEYFILE: str = "/certs/localhost-key.pem"
+    FASTAPI_SSL_CERTFILE: str = "/etc/letsencrypt/live/9bi.rhamzthev.com/fullchain.pem"
+    FASTAPI_SSL_KEYFILE: str = "/etc/letsencrypt/live/9bi.rhamzthev.com/privkey.pem"
     FASTAPI_SSL_KEYFILE_PASSWORD: Optional[str] = None
     
     # Scopes required for Twitch API
