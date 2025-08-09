@@ -15,8 +15,6 @@ services:
     ports:
       - "80:8080"
       - "443:8443"
-    env_file:
-      - .env
     volumes:
       - /etc/letsencrypt:/etc/letsencrypt:ro
     restart: unless-stopped
