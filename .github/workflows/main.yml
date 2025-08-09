@@ -52,15 +52,17 @@ jobs:
           key: ${{ secrets.VM_SSH_KEY }}
           envs: DOCKERHUB_USERNAME, DOCKERHUB_ACCESS_TOKEN, DOCKERHUB_REPOSITORY
           script: |
-            # Navigate to the directory where Docker Compose is executed
             cd 9bi/
 
-            # Log in to DockerHub using password-stdin for security
-            echo "$DOCKERHUB_ACCESS_TOKEN" | sudo docker login -u "$DOCKERHUB_USERNAME" --password-stdin -S
-            
-            # Delete all containers and images
-            sudo docker compose down --volumes
-            sudo docker rmi $(sudo docker images -q)
+            # Log in to DockerHub
+            echo "$DOCKERHUB_ACCESS_TOKEN" | sudo docker login -u "$DOCKERHUB_USERNAME" --password-stdin
 
-            # Start the containers using Docker Compose
+            # Stop and remove containers, networks, volumes
+            sudo docker compose down --volumes
+
+            # Remove all unused containers and images
+            sudo docker container prune -f
+            sudo docker image prune -af
+
+            # Start containers (loads .env automatically if present in this dir)
             sudo docker compose up -d
