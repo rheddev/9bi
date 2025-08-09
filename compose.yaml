@@ -18,6 +18,8 @@ services:
     volumes:
       - /etc/letsencrypt:/etc/letsencrypt:ro
     restart: unless-stopped
+    group_add:
+      - "986"  # replace with gid of 'sslread'
 
 # The commented out section below is an example of how to define a PostgreSQL
 # database that your application can use. `depends_on` tells Docker Compose to
