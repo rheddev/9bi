@@ -50,7 +50,7 @@ jobs:
           host: ${{ secrets.VM_HOST }}
           username: ${{ secrets.VM_USERNAME }}
           key: ${{ secrets.VM_SSH_KEY }}
-          envs: DOCKERHUB_USERNAME, DOCKERHUB_ACCESS_TOKEN, DOCKERHUB_REPOSITORY
+          envs: DOCKERHUB_USERNAME,DOCKERHUB_ACCESS_TOKEN,DOCKERHUB_REPOSITORY
           script: |
             cd 9bi/
 
@@ -64,5 +64,5 @@ jobs:
             sudo docker container prune -f
             sudo docker image prune -af
 
-            # Start containers (explicitly load .env)
-            sudo docker compose --env-file .env up -d
+            # Start containers (loads .env automatically if present in this dir)
+            sudo docker compose up -d
