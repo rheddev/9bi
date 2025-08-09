@@ -17,8 +17,6 @@ services:
       - "443:8443"
     volumes:
       - ${CERTS_PATH:-./certs}:/certs:ro
-    env_file:
-      - .env
     restart: unless-stopped
 
 # The commented out section below is an example of how to define a PostgreSQL
