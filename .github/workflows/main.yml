@@ -56,7 +56,7 @@ jobs:
             cd 9bi/
 
             # Log in to DockerHub using password-stdin for security
-            echo "$DOCKERHUB_ACCESS_TOKEN" | sudo docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+            echo "$DOCKERHUB_ACCESS_TOKEN" | sudo docker login -u "$DOCKERHUB_USERNAME" --password-stdin -S
             
             # Delete all containers and images
             sudo docker compose down --volumes
