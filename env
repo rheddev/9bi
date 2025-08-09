@@ -1,0 +1,49 @@
+# Discord Bot Configuration
+DISCORD_BOT_TOKEN=
+
+# Twitch API Configuration
+TWITCH_CLIENT_ID=
+TWITCH_CLIENT_SECRET=
+
+# Twitch Streamer Configuration
+# The username of the Twitch streamer to monitor for live notifications
+TWITCH_USERNAME=
+
+# OAuth Configuration (optional, defaults to http://localhost/callback)
+REDIRECT_URI=
+
+# Stream Notification Configuration (optional, falls back to "general" or "stream-notifications" channel)
+# Set this to your Discord channel ID where you want stream notifications to be sent
+DISCORD_WELCOME_CHANNEL_ID=
+
+STREAM_NOTIFICATION_CHANNEL_ID=
+STREAM_NOTIFICATION_ROLE_ID=
+
+# Server (FastAPI) Configuration
+# Host/IP to bind the HTTP/HTTPS servers
+FASTAPI_HOST=0.0.0.0
+# HTTP port
+FASTAPI_PORT=8080
+
+# HTTPS Configuration
+# Enable HTTPS listener on a separate port (true/false)
+FASTAPI_ENABLE_HTTPS=true
+# HTTPS port
+FASTAPI_SSL_PORT=8443
+# Certificate and key file paths
+# If running in Docker, these should point to files mounted inside the container (e.g., under /certs)
+# If running directly on the host, these can be absolute paths to your cert files
+FASTAPI_SSL_CERTFILE=/certs/localhost.pem
+FASTAPI_SSL_KEYFILE=/certs/localhost-key.pem
+# Optional password for the key file (leave blank if none)
+FASTAPI_SSL_KEYFILE_PASSWORD=
+
+# Example host paths (commented) for Let's Encrypt on your prod server:
+# FASTAPI_SSL_CERTFILE=/etc/letsencrypt/live/9bi.rhamzthev.com/fullchain.pem
+# FASTAPI_SSL_KEYFILE=/etc/letsencrypt/live/9bi.rhamzthev.com/privkey.pem
+
+# Docker Compose overrides (not read by the app directly)
+# Host directory containing certs to mount at /certs in the container
+CERTS_HOST_PATH=./certs
+# Path to the env file for docker compose (use `env` to point to this file)
+ENV_FILE_PATH=.env

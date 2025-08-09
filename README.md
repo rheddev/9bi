@@ -55,7 +55,7 @@ STREAM_NOTIFICATION_CHANNEL_ID=your_discord_channel_id_here
 
 ### Optional Environment Variables
 
-- `REDIRECT_URI`: OAuth redirect URI (default: `http://localhost:8000/callback`)
+- `REDIRECT_URI`: OAuth redirect URI (default: `http://localhost/callback`)
 - `STREAM_NOTIFICATION_CHANNEL_ID`: Discord channel ID for notifications (falls back to common channel names)
 
 ## Setup Instructions
@@ -77,7 +77,7 @@ STREAM_NOTIFICATION_CHANNEL_ID=your_discord_channel_id_here
 
 1. Go to the [Twitch Developer Console](https://dev.twitch.tv/console)
 2. Create a new application
-3. Set the OAuth Redirect URL to `http://localhost:8000/callback` (or your custom domain)
+3. Set the OAuth Redirect URL to `http://localhost/callback` (or your custom domain)
 4. Copy the Client ID and Client Secret
 
 ### 3. Running the Bot

@@ -1,0 +1,66 @@
+# Required GitHub Secrets/env for this workflow:
+# - DOCKERHUB_USERNAME: Docker Hub username
+# - DOCKERHUB_ACCESS_TOKEN: Docker Hub access token for login/push
+# - DOCKERHUB_REPOSITORY: Docker Hub repository name only (no username)
+# - VM_HOST: Target VM hostname or IP
+# - VM_USERNAME: SSH username for the VM
+# - VM_SSH_KEY: Private key for SSH login (PEM contents)
+
+name: Deploy Docker to VM
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
+
+      - name: Build and push Docker image to Docker Hub
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_REPOSITORY: ${{ secrets.DOCKERHUB_REPOSITORY }}
+        run: |
+          docker compose build --no-cache
+          docker compose push
+
+      - name: Deploy the Docker image to VM
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_ACCESS_TOKEN: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
+          DOCKERHUB_REPOSITORY: ${{ secrets.DOCKERHUB_REPOSITORY }}
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USERNAME }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          envs: DOCKERHUB_USERNAME, DOCKERHUB_ACCESS_TOKEN, DOCKERHUB_REPOSITORY
+          script: |
+            # Navigate to the directory where Docker Compose is executed
+            cd 9bi/
+
+            # Log in to DockerHub using password-stdin for security
+            echo "$DOCKERHUB_ACCESS_TOKEN" | sudo docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+            
+            # Delete all containers and images
+            sudo docker compose down --volumes
+            sudo docker rmi $(sudo docker images -q)
+
+            # Start the containers using Docker Compose
+            sudo docker compose up -d

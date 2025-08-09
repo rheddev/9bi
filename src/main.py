@@ -10,6 +10,7 @@ import logging
 import threading
 from datetime import datetime
 from typing import Optional
+import os
 
 import discord
 from fastapi import FastAPI, Request
@@ -491,7 +492,33 @@ async def on_member_join(member: discord.Member) -> None:
 def start_fastapi_server() -> None:
     """Start the FastAPI server for OAuth callbacks."""
     host, port = config.get_fastapi_config()
+    # Always start HTTP server
     uvicorn.run(app, host=host, port=port, log_level="warning")
+
+
+def start_fastapi_server_https_if_enabled() -> None:
+    """Start the FastAPI HTTPS server on a separate port if enabled and certs are present."""
+    host, ssl_port, enabled, certfile, keyfile, keyfile_password = config.get_fastapi_https_config()
+    if not enabled:
+        return
+    # Validate cert files exist before attempting to launch HTTPS
+    try:
+        if not (os.path.isfile(certfile) and os.path.isfile(keyfile)):
+            logger.warning("HTTPS enabled but certificate files not found; skipping HTTPS server")
+            return
+    except Exception as e:
+        logger.warning(f"Error checking cert files: {e}; skipping HTTPS server")
+        return
+
+    uvicorn.run(
+        app,
+        host=host,
+        port=ssl_port,
+        log_level="warning",
+        ssl_certfile=certfile,
+        ssl_keyfile=keyfile,
+        ssl_keyfile_password=keyfile_password,
+    )
 
 
 def main() -> None:
@@ -505,9 +532,13 @@ def main() -> None:
         # Configuration is validated in config.py
         logger.info("Starting Discord bot with Twitch integration")
         
-        # Start FastAPI server in background thread
+        # Start FastAPI HTTP server in background thread
         server_thread = threading.Thread(target=start_fastapi_server, daemon=True)
         server_thread.start()
+
+        # Start FastAPI HTTPS server in background thread (best-effort)
+        https_thread = threading.Thread(target=start_fastapi_server_https_if_enabled, daemon=True)
+        https_thread.start()
         
         # Run Discord bot
         client.run(config.DISCORD_BOT_TOKEN)

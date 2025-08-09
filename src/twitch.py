@@ -87,7 +87,7 @@ class TwitchEventSub:
         
         self.client_id = client_id
         self.client_secret = client_secret
-        self.redirect_uri = redirect_uri or "http://localhost:8000/callback"
+        self.redirect_uri = redirect_uri or "http://localhost/callback"
         
         # Token storage
         self.access_token: Optional[str] = None

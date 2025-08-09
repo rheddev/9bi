@@ -38,7 +38,7 @@ class Config:
     TWITCH_CLIENT_SECRET: str
     
     # Optional environment variables with defaults
-    REDIRECT_URI: str = "http://localhost:8000/callback"
+    REDIRECT_URI: str = "http://localhost/callback"
     TWITCH_USERNAME: str = "notrheddev"
     STREAM_NOTIFICATION_CHANNEL_ID: Optional[str] = None
     STREAM_NOTIFICATION_ROLE_ID: Optional[str] = None
@@ -51,7 +51,14 @@ class Config:
     RECONNECT_BASE_DELAY_SECONDS: int = 1
     RECONNECT_MAX_DELAY_SECONDS: int = 30
     FASTAPI_HOST: str = "0.0.0.0"
-    FASTAPI_PORT: int = 8000
+    FASTAPI_PORT: int = 8080  # HTTP port
+
+    # HTTPS-related configuration
+    FASTAPI_ENABLE_HTTPS: bool = True
+    FASTAPI_SSL_PORT: int = 8443
+    FASTAPI_SSL_CERTFILE: str = "/certs/localhost.pem"
+    FASTAPI_SSL_KEYFILE: str = "/certs/localhost-key.pem"
+    FASTAPI_SSL_KEYFILE_PASSWORD: Optional[str] = None
     
     # Scopes required for Twitch API
     REQUIRED_TWITCH_SCOPES = ["channel:read:subscriptions"]
@@ -69,6 +76,11 @@ class Config:
         self._load_configuration()
         self._validate_configuration()
     
+    def _as_bool(self, value: Optional[str], default: bool) -> bool:
+        if value is None:
+            return default
+        return value.strip().lower() in {"1", "true", "yes", "y", "on"}
+
     def _load_configuration(self) -> None:
         """Load configuration from environment variables."""
         # Required settings
@@ -82,6 +94,17 @@ class Config:
         self.STREAM_NOTIFICATION_CHANNEL_ID = os.getenv('STREAM_NOTIFICATION_CHANNEL_ID')
         self.STREAM_NOTIFICATION_ROLE_ID = os.getenv('STREAM_NOTIFICATION_ROLE_ID')
         self.DISCORD_WELCOME_CHANNEL_ID = os.getenv('DISCORD_WELCOME_CHANNEL_ID')
+
+        # Server settings
+        self.FASTAPI_HOST = os.getenv('FASTAPI_HOST', self.FASTAPI_HOST)
+        self.FASTAPI_PORT = int(os.getenv('FASTAPI_PORT', str(self.FASTAPI_PORT)))
+
+        # HTTPS settings
+        self.FASTAPI_ENABLE_HTTPS = self._as_bool(os.getenv('FASTAPI_ENABLE_HTTPS'), self.FASTAPI_ENABLE_HTTPS)
+        self.FASTAPI_SSL_PORT = int(os.getenv('FASTAPI_SSL_PORT', str(self.FASTAPI_SSL_PORT)))
+        self.FASTAPI_SSL_CERTFILE = os.getenv('FASTAPI_SSL_CERTFILE', self.FASTAPI_SSL_CERTFILE)
+        self.FASTAPI_SSL_KEYFILE = os.getenv('FASTAPI_SSL_KEYFILE', self.FASTAPI_SSL_KEYFILE)
+        self.FASTAPI_SSL_KEYFILE_PASSWORD = os.getenv('FASTAPI_SSL_KEYFILE_PASSWORD', self.FASTAPI_SSL_KEYFILE_PASSWORD)
         
         logger.info("Configuration loaded from environment variables")
     
@@ -121,8 +144,21 @@ class Config:
         return self.MAX_RECONNECT_ATTEMPTS, self.RECONNECT_BASE_DELAY_SECONDS, self.RECONNECT_MAX_DELAY_SECONDS
     
     def get_fastapi_config(self) -> tuple[str, int]:
-        """Get FastAPI server configuration as (host, port)."""
+        """Get FastAPI HTTP server configuration as (host, port)."""
         return self.FASTAPI_HOST, self.FASTAPI_PORT
+
+    def get_fastapi_https_config(self) -> tuple[str, int, bool, str, str, Optional[str]]:
+        """Get FastAPI HTTPS server configuration.
+        Returns (host, port, enabled, certfile, keyfile, keyfile_password).
+        """
+        return (
+            self.FASTAPI_HOST,
+            self.FASTAPI_SSL_PORT,
+            self.FASTAPI_ENABLE_HTTPS,
+            self.FASTAPI_SSL_CERTFILE,
+            self.FASTAPI_SSL_KEYFILE,
+            self.FASTAPI_SSL_KEYFILE_PASSWORD,
+        )
 
 # Global configuration instance
 config = Config() 
