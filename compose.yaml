@@ -16,7 +16,7 @@ services:
       - "80:8080"
       - "443:8443"
     volumes:
-      - ${CERTS_PATH:-./certs}:/certs:ro
+      - /etc/letsencrypt:/etc/letsencrypt
     restart: unless-stopped
 
 # The commented out section below is an example of how to define a PostgreSQL

@@ -42,8 +42,10 @@ FASTAPI_SSL_KEYFILE_PASSWORD=
 # FASTAPI_SSL_CERTFILE=/etc/letsencrypt/live/9bi.rhamzthev.com/fullchain.pem
 # FASTAPI_SSL_KEYFILE=/etc/letsencrypt/live/9bi.rhamzthev.com/privkey.pem
 
-# Docker Compose overrides (not read by the app directly)
+# Docker Compose variables (used by compose.yaml)
+# Docker Hub image coordinates
+DOCKERHUB_USERNAME=
+DOCKERHUB_REPOSITORY=
 # Host directory containing certs to mount at /certs in the container
-CERTS_HOST_PATH=./certs
-# Path to the env file for docker compose (use `env` to point to this file)
-ENV_FILE_PATH=.env
+# Used by compose.yaml as ${CERTS_PATH:-./certs}
+CERTS_PATH=./certs
