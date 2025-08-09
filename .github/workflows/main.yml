@@ -64,5 +64,5 @@ jobs:
             sudo docker container prune -f
             sudo docker image prune -af
 
-            # Start containers (loads .env automatically if present in this dir)
-            sudo docker compose up -d
+            # Start containers (explicitly load .env)
+            sudo docker compose --env-file .env up -d
