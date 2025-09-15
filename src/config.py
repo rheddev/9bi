@@ -38,7 +38,7 @@ class Config:
     TWITCH_CLIENT_SECRET: str
     
     # Optional environment variables with defaults
-    REDIRECT_URI: str = "http://localhost/callback"
+    REDIRECT_URI: str = "https://9bi.rhamzthev.com/callback"
     TWITCH_USERNAME: str = "notrheddev"
     STREAM_NOTIFICATION_CHANNEL_ID: Optional[str] = None
     STREAM_NOTIFICATION_ROLE_ID: Optional[str] = None
@@ -53,11 +53,11 @@ class Config:
     FASTAPI_HOST: str = "0.0.0.0"
     FASTAPI_PORT: int = 8080  # HTTP port
 
-    # HTTPS-related configuration
-    FASTAPI_ENABLE_HTTPS: bool = True
+    # HTTPS-related configuration (disabled - Caddy handles SSL)
+    FASTAPI_ENABLE_HTTPS: bool = False
     FASTAPI_SSL_PORT: int = 8443
-    FASTAPI_SSL_CERTFILE: str = "/etc/letsencrypt/live/9bi.rhamzthev.com/fullchain.pem"
-    FASTAPI_SSL_KEYFILE: str = "/etc/letsencrypt/live/9bi.rhamzthev.com/privkey.pem"
+    FASTAPI_SSL_CERTFILE: str = ""  # Not used - Caddy handles SSL termination
+    FASTAPI_SSL_KEYFILE: str = ""   # Not used - Caddy handles SSL termination
     FASTAPI_SSL_KEYFILE_PASSWORD: Optional[str] = None
     
     # Scopes required for Twitch API
@@ -149,6 +149,7 @@ class Config:
 
     def get_fastapi_https_config(self) -> tuple[str, int, bool, str, str, Optional[str]]:
         """Get FastAPI HTTPS server configuration.
+        Note: HTTPS is disabled - Caddy handles SSL termination.
         Returns (host, port, enabled, certfile, keyfile, keyfile_password).
         """
         return (

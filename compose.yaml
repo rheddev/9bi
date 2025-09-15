@@ -8,15 +8,27 @@
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
 services:
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - server
+
   server:
     image: ${DOCKERHUB_USERNAME}/${DOCKERHUB_REPOSITORY}:latest
     build:
       context: .
-    ports:
-      - "80:8080"
-      - "443:8443"
-    volumes:
-      - /etc/letsencrypt:/etc/letsencrypt:ro
+    # Removed external port mappings - Caddy will proxy to these internal ports
+    expose:
+      - "8080"
+    # Removed letsencrypt volume - Caddy now handles SSL certificates
     restart: unless-stopped
 
 # The commented out section below is an example of how to define a PostgreSQL
@@ -46,8 +58,9 @@ services:
 #       interval: 10s
 #       timeout: 5s
 #       retries: 5
-# volumes:
-#   db-data:
+volumes:
+  caddy_data:
+  caddy_config:
 # secrets:
 #   db-password:
 #     file: db/password.txt

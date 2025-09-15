@@ -1,0 +1,32 @@
+9bi.rhamzthev.com {
+    # Reverse proxy to the server container
+    reverse_proxy server:8080
+    
+    # Enable gzip compression
+    encode gzip
+    
+    # Add security headers
+    header {
+        # Enable HSTS
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        # Prevent clickjacking
+        X-Frame-Options "DENY"
+        # Prevent MIME type sniffing
+        X-Content-Type-Options "nosniff"
+        # Enable XSS protection
+        X-XSS-Protection "1; mode=block"
+        # Referrer policy
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+    
+    # Log access
+    log {
+        output stdout
+        format console
+    }
+}
+
+# Redirect www to non-www (optional)
+www.9bi.rhamzthev.com {
+    redir https://9bi.rhamzthev.com{uri} permanent
+} 
